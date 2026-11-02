@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Information System</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f1f4f9;
+    color: #1f2937;
+  }
+  header {
+    background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+    color: #fff;
+    padding: 20px 32px;
+  }
+  header h1 { font-size: 1.6rem; }
+  header p  { opacity: .85; font-size: .9rem; margin-top: 4px; }
+
+  main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat  { background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .stat span  { display: block; font-size: .8rem; color: #6b7280; }
+  .stat strong{ font-size: 1.6rem; color: #1e3a8a; }
+
+  .card { background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .card h2 { font-size: 1.1rem; margin-bottom: 14px; color: #1e3a8a; }
+
+  form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  label { font-size: .8rem; font-weight: 600; display: block; margin-bottom: 4px; }
+  input, select {
+    width: 100%; padding: 9px 10px;
+    border: 1px solid #cbd5e1; border-radius: 6px; font-size: .95rem;
+  }
+  input:focus, select:focus { outline: 2px solid #93c5fd; border-color: #3b82f6; }
+
+  .actions { grid-column: 1 / -1; display: flex; gap: 10px; }
+  button {
+    border: 0; border-radius: 6px; padding: 9px 18px;
+    font-size: .9rem; cursor: pointer; font-weight: 600;
+  }
+  .btn-primary   { background: #2563eb; color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-secondary { background: #e5e7eb; }
+  .btn-edit   { background: #fbbf24; padding: 5px 10px; }
+  .btn-delete { background: #ef4444; color: #fff; padding: 5px 10px; }
+
+  .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 12px; flex-wrap: wrap; }
+  .toolbar input { max-width: 280px; }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th { background: #1e3a8a; color: #fff; text-align: left; padding: 10px; white-space: nowrap; }
+  td { padding: 10px; border-bottom: 1px solid #e5e7eb; }
+  tbody tr:nth-child(even) { background: #f8fafc; }
+  tbody tr:hover { background: #eff6ff; }
+
+  .grade { display: inline-block; min-width: 32px; text-align: center; padding: 2px 8px; border-radius: 12px; font-weight: 700; font-size: .8rem; }
+  .g-top  { background: #dcfce7; color: #166534; }
+  .g-mid  { background: #dbeafe; color: #1e40af; }
+  .g-low  { background: #fef3c7; color: #92400e; }
+  .g-fail { background: #fee2e2; color: #991b1b; }
+
+  .empty { text-align: center; padding: 24px; color: #6b7280; }
+
+  @media (max-width: 600px) {
+    header { padding: 16px; }
+    .actions { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Student Information System</h1>
+  <p>Add, view, search, update and delete student records</p>
+</header>
+
+<main>
+  <section class="stats">
+    <div class="stat"><span>Total Students</span><strong id="statTotal">0</strong></div>
+    <div class="stat"><span>Average Marks</span><strong id="statAvg">0</strong></div>
+    <div class="stat"><span>Highest Marks</span><strong id="statMax">0</strong></div>
+    <div class="stat"><span>Failed (Grade F)</span><strong id="statFail">0</strong></div>
+  </section>
+
+  <section class="card">
+    <h2 id="formTitle">Add Student Record</h2>
+    <form id="studentForm">
+      <div>
+        <label for="rollNo">Roll No</label>
+        <input id="rollNo" type="number" min="1" required>
+      </div>
+      <div>
+        <label for="name">Full Name</label>
+        <input id="name" type="text" required>
+      </div>
+      <div>
+        <label for="email">Email</label>
+        <input id="email" type="email" required>
+      </div>
+      <div>
+        <label for="phone">Phone</label>
+        <input id="phone" type="tel" pattern="[0-9]{10}" placeholder="10 digits">
+      </div>
+      <div>
+        <label for="course">Course</label>
+        <select id="course" required>
+          <option value="">-- Select --</option>
+          <option>B.Tech CSE</option>
+          <option>B.Tech ECE</option>
+          <option>B.Tech ME</option>
+          <option>BCA</option>
+          <option>MCA</option>
+        </select>
+      </div>
+      <div>
+        <label for="year">Year</label>
+        <select id="year" required>
+          <option value="">-- Select --</option>
+          <option>1</option><option>2</option><option>3</option><option>4</option>
+        </select>
+      </div>
+      <div>
+        <label for="marks">Marks (0-100)</label>
+        <input id="marks" type="number" min="0" max="100" step="0.01" required>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn-primary" id="saveBtn">Save Record</button>
+        <button type="button" class="btn-secondary" id="resetBtn">Clear</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="toolbar">
+      <h2>Student Records</h2>
+      <input type="search" id="search" placeholder="Search by name, roll no or course">
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Roll No</th><th>Name</th><th>Email</th><th>Phone</th>
+            <th>Course</th><th>Year</th><th>Marks</th><th>Grade</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script>
+  // ---- Data (kept in the browser; replace with calls to your PL/SQL backend) ----
+  let students = [
+    { roll: 101, name: "Aarav Sharma", email: "aarav@college.edu", phone: "9876543210", course: "B.Tech CSE", year: "2", marks: 91 },
+    { roll: 102, name: "Priya Verma",  email: "priya@college.edu", phone: "9876500011", course: "B.Tech CSE", year: "2", marks: 85 },
+    { roll: 103, name: "Rohan Mehta",  email: "rohan@college.edu", phone: "9876500022", course: "B.Tech ECE", year: "3", marks: 52 },
+    { roll: 104, name: "Sneha Gupta",  email: "sneha@college.edu", phone: "9876500033", course: "B.Tech ME",  year: "1", marks: 35 }
+  ];
+  let editingRoll = null;
+
+  const $ = id => document.getElementById(id);
+
+  // Same grading scale as the PL/SQL function calc_grade
+  function gradeOf(m) {
+    if (m >= 90) return "O";
+    if (m >= 80) return "A+";
+    if (m >= 70) return "A";
+    if (m >= 60) return "B+";
+    if (m >= 50) return "B";
+    if (m >= 40) return "C";
+    return "F";
+  }
+  function gradeClass(g) {
+    if (g === "O" || g === "A+") return "g-top";
+    if (g === "A" || g === "B+") return "g-mid";
+    if (g === "F") return "g-fail";
+    return "g-low";
+  }
+
+  function cell(tr, text) {
+    const td = document.createElement("td");
+    td.textContent = text;
+    tr.appendChild(td);
+    return td;
+  }
+
+  function render() {
+    const q = $("search").value.trim().toLowerCase();
+    const list = students.filter(s =>
+      String(s.roll).includes(q) ||
+      s.name.toLowerCase().includes(q) ||
+      s.course.toLowerCase().includes(q));
+
+    const tbody = $("tbody");
+    tbody.innerHTML = "";
+
+    if (list.length === 0) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 9; td.className = "empty"; td.textContent = "No records found.";
+      tr.appendChild(td); tbody.appendChild(tr);
+    }
+
+    list.forEach(s => {
+      const g = gradeOf(s.marks);
+      const tr = document.createElement("tr");
+      cell(tr, s.roll); cell(tr, s.name); cell(tr, s.email); cell(tr, s.phone);
+      cell(tr, s.course); cell(tr, s.year); cell(tr, s.marks);
+
+      const gTd = document.createElement("td");
+      const badge = document.createElement("span");
+      badge.className = "grade " + gradeClass(g);
+      badge.textContent = g;
+      gTd.appendChild(badge); tr.appendChild(gTd);
+
+      const aTd = document.createElement("td");
+      const eb = document.createElement("button");
+      eb.className = "btn-edit"; eb.textContent = "Edit";
+      eb.onclick = () => startEdit(s.roll);
+      const db = document.createElement("button");
+      db.className = "btn-delete"; db.textContent = "Delete";
+      db.onclick = () => removeStudent(s.roll);
+      aTd.append(eb, " ", db); tr.appendChild(aTd);
+
+      tbody.appendChild(tr);
+    });
+
+    // statistics
+    const n = students.length;
+    $("statTotal").textContent = n;
+    $("statAvg").textContent = n ? (students.reduce((a, s) => a + s.marks, 0) / n).toFixed(1) : 0;
+    $("statMax").textContent = n ? Math.max(...students.map(s => s.marks)) : 0;
+    $("statFail").textContent = students.filter(s => gradeOf(s.marks) === "F").length;
+  }
+
+  function resetForm() {
+    $("studentForm").reset();
+    $("rollNo").disabled = false;
+    $("email").disabled = false;
+    $("formTitle").textContent = "Add Student Record";
+    $("saveBtn").textContent = "Save Record";
+    editingRoll = null;
+  }
+
+  function startEdit(roll) {
+    const s = students.find(x => x.roll === roll);
+    $("rollNo").value = s.roll;   $("rollNo").disabled = true;
+    $("name").value   = s.name;
+    $("email").value  = s.email;  $("email").disabled = true;
+    $("phone").value  = s.phone;
+    $("course").value = s.course;
+    $("year").value   = s.year;
+    $("marks").value  = s.marks;
+    $("formTitle").textContent = "Update Student Record";
+    $("saveBtn").textContent = "Update Record";
+    editingRoll = roll;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function removeStudent(roll) {
+    if (confirm("Delete record for Roll No " + roll + "?")) {
+      students = students.filter(s => s.roll !== roll);
+      render();
+    }
+  }
+
+  $("studentForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const rec = {
+      roll:   Number($("rollNo").value),
+      name:   $("name").value.trim(),
+      email:  $("email").value.trim().toLowerCase(),
+      phone:  $("phone").value.trim(),
+      course: $("course").value,
+      year:   $("year").value,
+      marks:  Number($("marks").value)
+    };
+
+    if (editingRoll === null) {
+      if (students.some(s => s.roll === rec.roll)) { alert("Roll No already exists."); return; }
+      if (students.some(s => s.email === rec.email)) { alert("Email already exists."); return; }
+      students.push(rec);
+    } else {
+      const i = students.findIndex(s => s.roll === editingRoll);
+      rec.email = students[i].email;
+      students[i] = rec;
+    }
+    resetForm();
+    render();
+  });
+
+  $("resetBtn").addEventListener("click", resetForm);
+  $("search").addEventListener("input", render);
+
+  render();
+</script>
+</body>
+</html>
